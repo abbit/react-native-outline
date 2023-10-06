@@ -3,6 +3,8 @@ package expo.modules.outlineapi
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
+import OutlineApiGo.*;
+
 class OutlineApiModule : Module() {
   // Each module class must implement the definition function. The definition consists of components
   // that describes the module's functionality and behavior.
@@ -23,7 +25,7 @@ class OutlineApiModule : Module() {
 
     // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
     Function("hello") {
-      "Hello world! 👋"
+      OutlineApiGo.hello()
     }
 
     // Defines a JavaScript function that always returns a Promise and whose native code

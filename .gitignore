@@ -35,5 +35,9 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# IDEs
+.gradle
+.idea
+
 # builds
 modules/outline-api/android/build
