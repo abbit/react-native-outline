@@ -1,6 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { StyleSheet, Text, View, Button, TextInput } from "react-native";
+import { hello } from "./modules/outline-api";
 
 export default function App() {
   const [accessKey, setAccessKey] = useState("");
@@ -34,6 +35,7 @@ export default function App() {
         title={isConnected ? "Disconnect" : "Connect"}
         onPress={toggleOutlineConnection}
       />
+      <Text>Outline API says: {hello()}</Text>
     </View>
   );
 }
