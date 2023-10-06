@@ -1,9 +1,16 @@
 {
-  "platforms": ["ios", "android", "web"],
+  "platforms": [
+    "ios",
+    "android"
+  ],
   "ios": {
-    "modules": ["OutlineApiModule"]
+    "modules": [
+      "OutlineApiModule"
+    ]
   },
   "android": {
-    "modules": ["expo.modules.outlineapi.OutlineApiModule"]
+    "modules": [
+      "expo.modules.outlineapi.OutlineApiModule"
+    ]
   }
 }

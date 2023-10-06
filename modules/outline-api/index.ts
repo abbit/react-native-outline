@@ -4,7 +4,7 @@ import {
   Subscription,
 } from "expo-modules-core";
 
-// Import the native module. On web, it will be resolved to OutlineApi.web.ts
+// Import the native module
 // and on native platforms to OutlineApi.ts
 import OutlineApiModule from "./src/OutlineApiModule";
 import { ChangeEventPayload } from "./src/OutlineApi.types";
