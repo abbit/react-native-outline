@@ -6,7 +6,9 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "bind:android": "mkdir -p ./modules/outline-api/android/libs && gomobile bind -target=android -o ./modules/outline-api/android/libs/OutlineApiGo.aar ./modules/outline-api/go",
+    "bind:ios": "gomobile bind -target=ios -o ./modules/outline-api/ios/OutlineApiGo.xcframework ./modules/outline-api/go && cp ./modules/outline-api/ios/OutlineApiGo.xcframework/ios-arm64/OutlineApiGo.framework/Headers/*.h modules/outline-api/ios/OutlineApiGoHeaders",
+    "bind": "npm run bind:android && npm run bind:ios"
   },
   "dependencies": {
     "expo": "~49.0.13",

@@ -1,4 +1,4 @@
-module outline-api-go
+module rn-outline
 
 go 1.21.1
 
