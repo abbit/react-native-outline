@@ -1,5 +1,4 @@
 import ExpoModulesCore
-import OutlineApiGo
 
 public class OutlineApiModule: Module {
   // Each module class must implement the definition function. The definition consists of components
@@ -18,11 +17,6 @@ public class OutlineApiModule: Module {
 
     // Defines event names that the module can send to JavaScript.
     Events("onChange")
-
-    // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
-    Function("hello") {
-      return OutlineApiGoHello()
-    }
 
     // Defines a JavaScript function that always returns a Promise and whose native code
     // is by default dispatched on the different thread than the JavaScript runtime runs on.

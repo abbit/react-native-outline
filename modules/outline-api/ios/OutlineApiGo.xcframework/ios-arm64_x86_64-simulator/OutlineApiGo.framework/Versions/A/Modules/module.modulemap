@@ -1,8 +1,0 @@
-framework module "OutlineApiGo" {
-	header "ref.h"
-    header "OutlineApiGo.objc.h"
-    header "Universe.objc.h"
-    header "OutlineApiGo.h"
-
-    export *
-}
