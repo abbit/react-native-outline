@@ -8,37 +8,36 @@ import {
 // and on native platforms to OutlineApi.ts
 import OutlineApiModule from "./src/OutlineApiModule";
 import {
-  ChangeEventPayload,
+  TunnelStatusEventPayload,
   ShadowsocksSessionConfig,
   Tunnel,
+  EventName,
+  TunnelStatus,
 } from "./src/OutlineApi.types";
 import { SHADOWSOCKS_URI } from "ShadowsocksConfig";
 
-// Get the native constant value.
-export const PI = OutlineApiModule.PI;
-
-export async function setValueAsync(value: string) {
-  return await OutlineApiModule.setValueAsync(value);
-}
+export { TunnelStatus };
 
 const emitter = new EventEmitter(
   OutlineApiModule ?? NativeModulesProxy.OutlineApi
 );
 
-export function addChangeListener(
-  listener: (event: ChangeEventPayload) => void
+function addTunnelStatusListener(
+  listener: (event: TunnelStatusEventPayload) => void
 ): Subscription {
-  return emitter.addListener<ChangeEventPayload>("onChange", listener);
+  return emitter.addListener<TunnelStatusEventPayload>(
+    EventName.TUNNEL_STATUS_CHANGED,
+    listener
+  );
 }
 
-export { ChangeEventPayload };
-
-export function prepareVPN(): Promise<string> {
+export function prepareVPN(): boolean {
   return OutlineApiModule.prepareVpn();
 }
 
-// If "possiblyInviteUul" is a URL whose fragment contains a Shadowsocks URL
+// If "possiblyInviteUrl" is a URL whose fragment contains a Shadowsocks URL
 // then return that Shadowsocks URL, otherwise return the original string.
+// adapted from https://github.com/Jigsaw-Code/outline-client/blob/afd41e08a9e75664211397c2d3ecd6040275a807/src/www/app/app.ts#L39
 export function unwrapInvite(possiblyInviteUrl: string): string {
   try {
     const url = new URL(possiblyInviteUrl);
@@ -68,6 +67,7 @@ export function unwrapInvite(possiblyInviteUrl: string): string {
 }
 
 // Parses an access key string into a ShadowsocksConfig object.
+// adapted from https://github.com/Jigsaw-Code/outline-client/blob/afd41e08a9e75664211397c2d3ecd6040275a807/src/www/app/outline_server_repository/access_key_serialization.ts#L24
 export function staticKeyToShadowsocksSessionConfig(
   staticKey: string
 ): ShadowsocksSessionConfig {
@@ -87,6 +87,8 @@ export function staticKeyToShadowsocksSessionConfig(
 }
 
 class MobileTunnel implements Tunnel {
+  private statusChangeSubscription: Subscription | null = null;
+
   constructor(public id: string) {}
 
   async start(accessKey: string) {
@@ -118,6 +120,21 @@ class MobileTunnel implements Tunnel {
 
   async isRunning() {
     return OutlineApiModule.isVpnActive(this.id);
+  }
+
+  onStatusChange(listener: (status: TunnelStatus) => void) {
+    this.statusChangeSubscription = addTunnelStatusListener((event) => {
+      if (event.tunnelId === this.id) {
+        listener(event.status);
+      }
+    });
+  }
+
+  removeStatusChangeListener() {
+    if (this.statusChangeSubscription) {
+      this.statusChangeSubscription.remove();
+      this.statusChangeSubscription = null;
+    }
   }
 }
 

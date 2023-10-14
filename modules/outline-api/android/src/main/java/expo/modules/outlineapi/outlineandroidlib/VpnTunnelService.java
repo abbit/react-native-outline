@@ -172,7 +172,6 @@ public class VpnTunnelService extends VpnService {
   @Override
   public void onRevoke() {
     LOG.info("VPN revoked.");
-    broadcastVpnConnectivityChange(TunnelStatus.DISCONNECTED);
     tearDownActiveTunnel();
   }
 
@@ -342,6 +341,7 @@ public class VpnTunnelService extends VpnService {
   /* Helper method to tear down an active tunnel. */
   private void tearDownActiveTunnel() {
     stopVpnTunnel();
+    broadcastVpnConnectivityChange(TunnelStatus.DISCONNECTED);
     stopForeground();
     tunnelConfig = null;
     stopNetworkConnectivityMonitor();

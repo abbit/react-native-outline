@@ -1,7 +1,3 @@
-export type ChangeEventPayload = {
-  value: string;
-};
-
 // Copyright 2020 The Outline Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,8 +20,24 @@ export interface ShadowsocksSessionConfig {
   prefix?: string;
 }
 
-// Represents a VPN tunnel to a Shadowsocks proxy server. Implementations provide native tunneling
-// functionality through cordova.plugins.oultine.Tunnel and ElectronOutlineTunnel.
+export enum EventName {
+  TUNNEL_STATUS_CHANGED = "onTunnelStatusChanged",
+}
+
+export enum TunnelStatus {
+  CONNECTED = 0,
+  DISCONNECTED = 1,
+  RECONNECTING = 2,
+}
+
+export type TunnelStatusEventPayload = {
+  tunnelId: string;
+  status: TunnelStatus;
+};
+
+// Represents a VPN tunnel to a Shadowsocks proxy server
+// Implementations provide native tunneling
+// adapted from https://github.com/Jigsaw-Code/outline-client/blob/afd41e08a9e75664211397c2d3ecd6040275a807/src/www/app/tunnel.ts#L33C19-L33C19
 export interface Tunnel {
   // Unique instance identifier.
   readonly id: string;
@@ -41,4 +53,10 @@ export interface Tunnel {
 
   // Returns whether the tunnel instance is active.
   isRunning(): Promise<boolean>;
+
+  // Sets a listener, to be called when the tunnel status changes.
+  onStatusChange(listener: (status: TunnelStatus) => void): void;
+
+  // Removes the listener.
+  removeStatusChangeListener(): void;
 }
