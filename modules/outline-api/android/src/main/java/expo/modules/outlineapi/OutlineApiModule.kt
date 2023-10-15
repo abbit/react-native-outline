@@ -102,6 +102,7 @@ class OutlineApiModule : Module() {
 
         // Requests user permission to connect the VPN.
         // Returns "true" if permission was previously granted, and "false" if the OS prompt will be displayed.
+        // Throws an exception if cannot request the permission.
         Function("prepareVpn") {
             LOG.fine("Preparing VPN.")
             val prepareVpnIntent = VpnService.prepare(context) ?: return@Function true
@@ -122,16 +123,25 @@ class OutlineApiModule : Module() {
             }
         }
 
+
+        // Starts the VPN connection.
+        // Returns error code. 0 means success.
+        // Throws an exception if cannot start the VPN.
         AsyncFunction("startVpn") { tunnelId: String, config: VpnTunnelConfig ->
             startVpnTunnel(tunnelId, config)
         }
 
+
+        // Stops the VPN connection.
+        // Returns error code. 0 means success.
+        // Throws an exception if cannot stop the VPN.
         AsyncFunction("stopVpn") { tunnelId: String ->
             LOG.info(String.format(Locale.ROOT, "Stopping VPN tunnel %s", tunnelId))
             vpnTunnelService!!.stopTunnel(tunnelId)
         }
 
         // Returns whether the VPN service is running a particular tunnel instance.
+        // Throws an exception if cannot determine the status.
         AsyncFunction("isVpnActive") { tunnelId: String ->
             try {
                 return@AsyncFunction vpnTunnelService!!.isTunnelActive(tunnelId)
