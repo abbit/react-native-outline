@@ -1,0 +1,3 @@
+[submodule "outline-go-tun2socks"]
+	path = outline-go-tun2socks
+	url = https://github.com/abbit/outline-go-tun2socks
