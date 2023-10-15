@@ -1,5 +1,8 @@
 PODS:
   - boost (1.76.0)
+  - CocoaLumberjack/Core (3.8.1)
+  - CocoaLumberjack/Swift (3.8.1):
+    - CocoaLumberjack/Core
   - DoubleConversion (1.1.6)
   - EXApplication (5.3.1):
     - ExpoModulesCore
@@ -97,6 +100,7 @@ PODS:
   - hermes-engine/Pre-built (0.72.5)
   - libevent (2.1.12)
   - OutlineApi (1.0.0):
+    - CocoaLumberjack/Swift
     - ExpoModulesCore
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -572,6 +576,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - CocoaLumberjack
     - fmt
     - libevent
     - SocketRocket
@@ -691,6 +696,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
+  CocoaLumberjack: 5c7e64cdb877770859bddec4d3d5a0d7c9299df9
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EXApplication: 042aa2e3f05258a16962ea1a9914bf288db9c9a1
   EXConstants: ce5bbea779da8031ac818c36bea41b10e14d04e1
@@ -713,7 +719,7 @@ SPEC CHECKSUMS:
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   hermes-engine: f6cf92a471053245614d9d8097736f6337d5b86c
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  OutlineApi: c161f7da35e6796e8be984d20163a88c1f3f9bf7
+  OutlineApi: 0ffbe408bf1784a62347baffe4322a3ad63e6108
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: df81ab637d35fac9e6eb94611cfd20f0feb05455
   RCTTypeSafety: 4636e4a36c7c2df332bda6d59b19b41c443d4287

@@ -8,7 +8,8 @@ Pod::Spec.new do |s|
   s.platform       = :ios, '13.0'
   s.source         = { git: '' }
   s.static_framework = true
-
+  
+  s.dependency 'CocoaLumberjack/Swift'
   s.dependency 'ExpoModulesCore'
 
   # Swift/Objective-C compatibility
@@ -18,5 +19,5 @@ Pod::Spec.new do |s|
   }
   
   s.source_files = "**/*.{h,m,mm,swift,hpp,cpp}"
-  s.vendored_frameworks = "OutlineApiGo.xcframework" 
+  s.vendored_frameworks = "Tun2socks.xcframework" 
 end
