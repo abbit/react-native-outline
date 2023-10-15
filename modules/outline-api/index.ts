@@ -92,16 +92,23 @@ class MobileTunnel implements Tunnel {
   constructor(public id: string) {}
 
   async start(accessKey: string) {
-    let errCode = -1;
+    let config: ShadowsocksSessionConfig;
     try {
       const invite = unwrapInvite(accessKey);
       console.log("invite", invite);
-      const config = staticKeyToShadowsocksSessionConfig(invite);
-      console.log("config", config);
-      errCode = await OutlineApiModule.startVpn(this.id, config);
+      config = staticKeyToShadowsocksSessionConfig(invite);
     } catch (cause) {
       console.log("Failed to parse static access key", cause);
       throw new Error("Invalid static access key.");
+    }
+
+    let errCode = -1;
+    try {
+      console.log("config", config);
+      errCode = await OutlineApiModule.startVpn(this.id, config);
+    } catch (cause) {
+      console.log("Failed to start VPN", cause);
+      throw new Error("FailedToStartVpn");
     }
 
     if (errCode !== 0) {
@@ -111,7 +118,14 @@ class MobileTunnel implements Tunnel {
   }
 
   async stop() {
-    const errCode = await OutlineApiModule.stopVpn(this.id);
+    let errCode = -1;
+    try {
+      const errCode = await OutlineApiModule.stopVpn(this.id);
+    } catch (cause) {
+      console.log("Failed to stop VPN", cause);
+      throw new Error("FailedToStopVpn");
+    }
+
     if (errCode !== 0) {
       console.warn("Failed to stop tunnel", errCode);
       throw new Error("FailedToStopTunnel");
