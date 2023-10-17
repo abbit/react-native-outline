@@ -9,7 +9,6 @@ Pod::Spec.new do |s|
   s.source         = { git: '' }
   s.static_framework = true
   
-  s.dependency 'CocoaLumberjack/Swift'
   s.dependency 'ExpoModulesCore'
 
   # Swift/Objective-C compatibility
@@ -18,6 +17,11 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
   
-  s.source_files = "**/*.{h,m,mm,swift,hpp,cpp}"
-  s.vendored_frameworks = "Tun2socks.xcframework" 
+  s.source_files = "OutlineApiModule.swift"
+
+  s.subspec 'OutlineAppleLib' do |ss|
+    ss.dependency 'CocoaLumberjack/Swift'
+    ss.source_files = "OutlineAppleLib/*.swift", "Tun2SocksHeaders/*.h"
+    ss.vendored_frameworks = "Tun2socks.xcframework" 
+  end
 end
