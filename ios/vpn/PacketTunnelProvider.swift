@@ -53,7 +53,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
   override init() {
     super.init()
     let appGroup = "group.com.anonymous.rn-outline"
-    let containerUrl = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup)
     tunnelStore = OutlineTunnelStore.init(appGroup: appGroup)
     packetQueue = DispatchQueue(label: "com.anonymous.rn-outline.packetqueue", qos: .default, attributes: .concurrent)
   }
