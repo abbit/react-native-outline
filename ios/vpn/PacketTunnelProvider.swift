@@ -5,10 +5,10 @@
 //  Created by Abbit on 15.10.2023.
 //
 
+import OSLog
 import NetworkExtension
 import OutlineAppleLib
 import Tun2socks
-import CocoaLumberjack
 
 let kActionStart = "start"
 let kActionRestart = "restart"
@@ -39,18 +39,13 @@ public enum ErrorCode: Int {
   case systemMisconfigured = 12
 }
 
-
-class TunWriter: Tun2socksTunWriter {
-  func a() {
-  }
-}
+let log = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "vpn")
 
 class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
   var hostNetworkAddress: String? // IP address of the host in the active network.
   var tunnel: Tun2socksTunnelProtocol?
   var startCompletion: ((NSNumber) -> Void)?
   var stopCompletion: ((NSNumber) -> Void)?
-  var fileLogger: DDFileLogger?
   var tunnelConfig: OutlineTunnel?
   var tunnelStore: OutlineTunnelStore?
   var packetQueue: DispatchQueue?
@@ -59,11 +54,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
     super.init()
     let appGroup = "group.com.anonymous.rn-outline"
     let containerUrl = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup)
-    let logsDirectory = containerUrl?.appendingPathComponent("Logs").path
-    let logFileManager = DDLogFileManagerDefault.init(logsDirectory: logsDirectory)
-    fileLogger = DDFileLogger.init(logFileManager: logFileManager)
-    DDLog.add(DDOSLogger.sharedInstance)
-    DDLog.add(fileLogger!)
     tunnelStore = OutlineTunnelStore.init(appGroup: appGroup)
     packetQueue = DispatchQueue(label: "com.anonymous.rn-outline.packetqueue", qos: .default, attributes: .concurrent)
   }
@@ -71,9 +61,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
   // MARK: NEPacketTunnelProvider methods
   
   override func startTunnel(options: [String : NSObject]?, completionHandler: @escaping (Error?) -> Void) {
-    DDLogInfo("Starting tunnel")
+    log.info("Starting tunnel")
     if options == nil {
-      DDLogWarn("Received a connect request from preferences")
+      log.warning("Received a connect request from preferences")
       let msg = NSLocalizedString(
         "vpn-connect",
         tableName: "Outline",
@@ -87,7 +77,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
       return
     }
     guard let tunnelConfig = retrieveTunnelConfig(options) else {
-      DDLogError("Failed to retrieve the tunnel config.")
+      log.error("Failed to retrieve the tunnel config.")
       completionHandler(NSError(domain: NEVPNErrorDomain, code: NEVPNError.Code.configurationUnknown.rawValue, userInfo: nil))
       return
     }
@@ -143,7 +133,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
   }
   
   override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
-    DDLogInfo("Stopping tunnel")
+    log.info("Stopping tunnel")
     self.tunnelStore!.status = OutlineTunnel.TunnelStatus.disconnected
     self.stopListeningForNetworkChanges()
     self.tunnel!.disconnect()
@@ -157,18 +147,18 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
   // Expects |messageData| to be JSON encoded.
   override func handleAppMessage(_ messageData: Data, completionHandler: ((Data?) -> Void)?) {
     guard let message = try? JSONSerialization.jsonObject(with: messageData, options: []) as? [String: Any] else {
-      DDLogError("Failed to receive message from app")
+      log.error("Failed to receive message from app")
       return
     }
     guard let completionHandler = completionHandler else {
-      DDLogError("Missing message completion handler")
+      log.error("Missing message completion handler")
       return
     }
     guard let action = message[kMessageKeyAction] as? String else {
-      DDLogError("Missing action key in app message")
+      log.error("Missing action key in app message")
       return completionHandler(nil)
     }
-    DDLogInfo("Received app message: \(action)")
+    log.info("Received app message: \(action)")
     let callbackWrapper: (NSNumber) -> Void = { errorCode in
       var tunnelId = ""
       if let tunnelConfig = self.tunnelConfig {
@@ -209,12 +199,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
   // Restarts tun2socks if |configChanged| or the host's IP address has changed in the network.
   func reconnectTunnel(_ configChanged: Bool) {
     guard let tunnelConfig = self.tunnelConfig, let hostAddress = tunnelConfig.config["host"] else {
-      DDLogError("Failed to reconnect tunnel, missing tunnel configuration.")
+      log.error("Failed to reconnect tunnel, missing tunnel configuration.")
       execAppCallbackForAction(kActionStart, errorCode: ErrorCode.illegalServerConfiguration)
       return
     }
     guard let activeHostNetworkAddress = getNetworkIpAddress(hostAddress.cString(using: .utf8)!) else {
-      DDLogError("Failed to retrieve the remote host IP address in the network")
+      log.error("Failed to retrieve the remote host IP address in the network")
       execAppCallbackForAction(kActionStart, errorCode: ErrorCode.illegalServerConfiguration)
       return
     }
@@ -227,7 +217,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
       }
       return
     }
-    DDLogInfo("Configuration or host IP address changed with the network. Reconnecting tunnel.")
+    log.info("Configuration or host IP address changed with the network. Reconnecting tunnel.")
     self.hostNetworkAddress = activeHostNetworkAddress
     guard let client = getClient() else {
       execAppCallbackForAction(kActionStart, errorCode: ErrorCode.illegalServerConfiguration)
@@ -238,14 +228,14 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
     ShadowsocksCheckConnectivity(client, &errorCodeRaw, nil)
     let errorCode = ErrorCode(rawValue: errorCodeRaw) ?? ErrorCode.undefined
     if errorCode != ErrorCode.noError && errorCode != ErrorCode.udpRelayNotEnabled {
-      DDLogError("Connectivity checks failed. Tearing down VPN")
+      log.error("Connectivity checks failed. Tearing down VPN")
       execAppCallbackForAction(kActionStart, errorCode: errorCode)
       cancelTunnelWithError(NSError(domain: NEVPNErrorDomain, code: NEVPNError.Code.connectionFailed.rawValue, userInfo: nil))
       return
     }
     let isUdpSupported = errorCode == ErrorCode.noError
     guard startTun2Socks(isUdpSupported: isUdpSupported) else {
-      DDLogError("Failed to reconnect tunnel. Tearing down VPN")
+      log.error("Failed to reconnect tunnel. Tearing down VPN")
       execAppCallbackForAction(kActionStart, errorCode: ErrorCode.vpnStartFailure)
       cancelTunnelWithError(NSError(domain: NEVPNErrorDomain, code: NEVPNError.Code.connectionFailed.rawValue, userInfo: nil))
       return
@@ -274,7 +264,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
     if let config = config, let tunnId = config[kMessageKeyTunnelId] as? String, config[kMessageKeyOnDemand] == nil {
       tunnelConfig = OutlineTunnel(id: tunnId, config: config)
     } else if let tunnelStore = self.tunnelStore {
-      DDLogInfo("Retrieving tunnelConfig from store.")
+      log.info("Retrieving tunnelConfig from store.")
       tunnelConfig = tunnelStore.load()
     }
     return tunnelConfig
@@ -292,7 +282,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
     var err: NSError?
     let client = ShadowsocksNewClient(config, &err)
     if err != nil {
-      DDLogInfo("Failed to construct client.")
+      log.info("Failed to construct client.")
     }
     return client
   }
@@ -305,18 +295,18 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
     var hints = addrinfo(ai_flags: AI_DEFAULT, ai_family: AF_UNSPEC, ai_socktype: SOCK_STREAM, ai_protocol: 0, ai_addrlen: 0, ai_canonname: nil, ai_addr: nil, ai_next: nil)
     let error = getaddrinfo(ipv4Str, nil, &hints, &info)
     if error != 0 {
-      DDLogError("getaddrinfo failed: \(String(cString: gai_strerror(error)))")
+      log.error("getaddrinfo failed: \(String(cString: gai_strerror(error)))")
       return nil
     }
     var networkAddress = [CChar](repeating: 0, count: Int(INET6_ADDRSTRLEN))
     if info == nil {
-      DDLogError("getaddrinfo returned nil")
+      log.error("getaddrinfo returned nil")
       return nil
     }
     let success = getIpAddressString(info!.pointee.ai_addr, &networkAddress, socklen_t(Int(INET6_ADDRSTRLEN)))
     freeaddrinfo(info)
     if !success {
-      DDLogError("inet_ntop failed with code \(errno)")
+      log.error("inet_ntop failed with code \(errno)")
       return nil
     }
     return String(cString: networkAddress)
@@ -326,7 +316,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
   // Returns whether the operation succeeded.
   func getIpAddressString(_ sa: UnsafePointer<sockaddr>, _ s: UnsafeMutablePointer<Int8>, _ maxbytes: socklen_t) -> Bool {
     guard let saPtr = UnsafeRawPointer(sa).assumingMemoryBound(to: sockaddr_storage.self).pointee.ss_family as sa_family_t? else {
-      DDLogError("Failed to get IP address string: invalid argument")
+      log.error("Failed to get IP address string: invalid argument")
       return false
     }
     switch saPtr {
@@ -337,11 +327,11 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
         }
       }
       guard let cString = inet_ntoa(addr) else {
-        DDLogError("Failed to get IP address string: inet_ntoa returned nil")
+        log.error("Failed to get IP address string: inet_ntoa returned nil")
         return false
       }
       guard strncpy(s, cString, Int(maxbytes)) != nil else {
-        DDLogError("Failed to get IP address string: strncpy returned nil")
+        log.error("Failed to get IP address string: strncpy returned nil")
         return false
       }
     case sa_family_t(AF_INET6):
@@ -351,11 +341,11 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
         }
       }
       guard inet_ntop(AF_INET6, &addr, s, maxbytes) != nil else {
-        DDLogError("Failed to get IP address string: inet_ntop returned nil")
+        log.error("Failed to get IP address string: inet_ntop returned nil")
         return false
       }
     default:
-      DDLogError("Cannot get IP address string: unknown address family")
+      log.error("Cannot get IP address string: unknown address family")
       return false
     }
     return true
@@ -376,9 +366,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
     weak var weakSelf = self
     self.setTunnelNetworkSettings(settings) { error in
       if let error = error {
-        DDLogError("Failed to set tunnel network settings: \(error.localizedDescription)")
+        log.error("Failed to set tunnel network settings: \(error.localizedDescription)")
       } else {
-        DDLogInfo("Tunnel connected")
+        log.info("Tunnel connected")
         // Passing nil settings clears the tunnel network configuration. Indicate to the system that
         // the tunnel is being re-established if this is the case.
         weakSelf?.reasserting = settings == nil
@@ -399,7 +389,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
     var err: NSError?
     self.tunnel = Tun2socksConnectShadowsocksTunnel(weakSelf, client, isUdpSupported, &err)
     if let error = err {
-      DDLogError("Failed to start tun2socks: \(error)")
+      log.error("Failed to start tun2socks: \(error)")
       return false
     }
     if !isRestart {
@@ -419,7 +409,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
         do {
           try weakSelf?.tunnel!.write(packet, ret0_: &bytesWritten)
         } catch let error {
-          DDLogError("Failed to write packet to tunnel: \(error)")
+          log.error("Failed to write packet to tunnel: \(error)")
           return
         }
       }
@@ -443,7 +433,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider, Tun2socksTunWriterProtocol {
       self.stopCompletion?(errorCode)
       self.stopCompletion = nil
     } else {
-      DDLogWarn("No callback for action \(action)")
+      log.warning("No callback for action \(action)")
     }
   }
 }
