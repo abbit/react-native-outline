@@ -232,6 +232,7 @@ public class OutlineVpn: NSObject {
   private func getTunnelManager(_ completion: @escaping ((NETunnelProviderManager?) -> Void)) {
     NETunnelProviderManager.loadAllFromPreferences() { (managers, error) in
       guard error == nil, managers != nil else {
+        // FIXME: hereeee
         completion(nil)
         return DDLogError("Failed to get tunnel manager: \(String(describing: error))")
       }

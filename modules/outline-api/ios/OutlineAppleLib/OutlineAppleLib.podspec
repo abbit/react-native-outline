@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name           = 'OutlineApi'
+  s.name           = 'OutlineAppleLib'
   s.version        = '1.0.0'
   s.summary        = 'A sample project summary'
   s.description    = 'A sample project description'
@@ -9,15 +9,14 @@ Pod::Spec.new do |s|
   s.source         = { git: '' }
   s.static_framework = true
   
-  s.dependency 'ExpoModulesCore'
   s.dependency 'CocoaLumberjack/Swift'
-  s.dependency 'OutlineAppleLib'
-
+  
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
   
-  s.source_files = "OutlineApiModule.swift"
+  s.source_files = "**/*.{swift,h,m,c,cc,cpp}"
+  s.vendored_frameworks = "Tun2socks.xcframework" 
 end

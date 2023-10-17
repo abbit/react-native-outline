@@ -1,6 +1,7 @@
 import ExpoModulesCore
 import CocoaLumberjack
 import NetworkExtension
+import OutlineAppleLib
 
 enum OutlineApiError: Error {
     case runtimeError(String)
@@ -59,7 +60,7 @@ public class OutlineApiModule: Module {
         // Throws an exception if cannot start the VPN.
         AsyncFunction("startVpn") { (tunnelId: String, config: VpnTunnelConfig, promise: Promise) in
             DDLogInfo("Starting VPN with tunnelId \(tunnelId)")
-            let configJson: [String: Any] = [
+            let configJson: [String: Any?] = [
                 "host": config.host,
                 "port": config.port,
                 "password": config.password,
@@ -133,7 +134,7 @@ public class OutlineApiModule: Module {
     }
     
     // Returns whether |config| contains all the expected keys
-    private func containsExpectedKeys(_ configJson: [String: Any]?) -> Bool {
+    private func containsExpectedKeys(_ configJson: [String: Any?]?) -> Bool {
         return configJson?["host"] != nil && configJson?["port"] != nil &&
         configJson?["password"] != nil && configJson?["method"] != nil
     }

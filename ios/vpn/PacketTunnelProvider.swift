@@ -6,7 +6,7 @@
 //
 
 import NetworkExtension
-import OutlineApi
+import OutlineAppleLib
 import Tun2socks
 import CocoaLumberjack
 
