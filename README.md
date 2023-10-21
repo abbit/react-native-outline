@@ -47,7 +47,13 @@ $ npm run android
 
 ### iOS
 
-TODO
+```bash
+$ npx expo prebuild -p ios
+```
+
+```bash
+$ npm run ios
+```
 
 ## How to use
 
