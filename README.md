@@ -51,6 +51,10 @@ $ npm run android
 $ npx expo prebuild -p ios
 ```
 
+```bash
+$ pod install --project-directory=ios
+```
+
 Open ios project in Xcode:
 
 ```bash
