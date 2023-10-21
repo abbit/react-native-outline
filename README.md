@@ -61,7 +61,7 @@ Open ios project in Xcode:
 $ xed ios
 ```
 
-Set signing team in Xcode and run
+Set signing team in Xcode
 
 Build and run
 
