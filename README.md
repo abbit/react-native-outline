@@ -63,6 +63,5 @@ Build and run
 
 ## How to use
 
-- Press "Prepare VPN" to grant VPN permissions
 - Enter Outline access key in the text field
 - Press "Connect"
