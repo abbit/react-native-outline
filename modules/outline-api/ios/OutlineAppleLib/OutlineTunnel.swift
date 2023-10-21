@@ -15,8 +15,6 @@
 import Foundation
 import NetworkExtension
 
-import CocoaLumberjack
-
 // Serializable class to wrap a tunnel's configuration.
 // Properties must be kept in sync with ServerConfig in www/types/outlinePlugin.d.ts
 // Note that this class and its non-private properties must be public in order to be visible to the ObjC
@@ -66,7 +64,7 @@ public class OutlineTunnel: NSObject, Codable {
         return try? JSONDecoder().decode(OutlineTunnel.self, from: jsonData)
     }
 
-    // Helper function that we can call from Objective-C.
+    // Helper function that we can call from Network Extension code.
     @objc public static func getTunnelNetworkSettings(tunnelRemoteAddress: String) -> NEPacketTunnelNetworkSettings {
         // The remote address is not used for routing, but for display in Settings > VPN > Outline.
         let settings = NEPacketTunnelNetworkSettings(tunnelRemoteAddress: tunnelRemoteAddress)
@@ -91,7 +89,11 @@ func getNetworkInterfaceAddresses() -> [String] {
     var addresses = [String]()
     
     guard getifaddrs(&interfaces) == 0 else {
-        DDLogError("Failed to retrieve network interface addresses")
+        if #available(iOSApplicationExtension 14.0, *) {
+            outlineLog.error("Failed to retrieve network interface addresses")
+        } else {
+            // Fallback on earlier versions
+        }
         return addresses
     }
     

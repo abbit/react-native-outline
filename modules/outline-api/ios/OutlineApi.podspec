@@ -10,7 +10,6 @@ Pod::Spec.new do |s|
   s.static_framework = true
   
   s.dependency 'ExpoModulesCore'
-  s.dependency 'CocoaLumberjack/Swift'
   s.dependency 'OutlineAppleLib'
 
   # Swift/Objective-C compatibility

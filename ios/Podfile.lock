@@ -1,8 +1,5 @@
 PODS:
   - boost (1.76.0)
-  - CocoaLumberjack/Core (3.8.1)
-  - CocoaLumberjack/Swift (3.8.1):
-    - CocoaLumberjack/Core
   - DoubleConversion (1.1.6)
   - EXApplication (5.3.1):
     - ExpoModulesCore
@@ -100,11 +97,9 @@ PODS:
   - hermes-engine/Pre-built (0.72.5)
   - libevent (2.1.12)
   - OutlineApi (1.0.0):
-    - CocoaLumberjack/Swift
     - ExpoModulesCore
     - OutlineAppleLib
-  - OutlineAppleLib (1.0.0):
-    - CocoaLumberjack/Swift
+  - OutlineAppleLib (1.0.0)
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -520,7 +515,6 @@ PODS:
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
-  - CocoaLumberjack/Swift
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXApplication (from `../node_modules/expo-application/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
@@ -581,7 +575,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - CocoaLumberjack
     - fmt
     - libevent
     - SocketRocket
@@ -703,7 +696,6 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
-  CocoaLumberjack: 5c7e64cdb877770859bddec4d3d5a0d7c9299df9
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EXApplication: 042aa2e3f05258a16962ea1a9914bf288db9c9a1
   EXConstants: ce5bbea779da8031ac818c36bea41b10e14d04e1
@@ -726,8 +718,8 @@ SPEC CHECKSUMS:
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   hermes-engine: f6cf92a471053245614d9d8097736f6337d5b86c
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  OutlineApi: d71bd06b867560a787be2e2e61c77a503df81e24
-  OutlineAppleLib: 372cf4bf6306b3febb0104ea35d8591f4152a381
+  OutlineApi: a9267b2a49a39efddeb397abfd5fa4600a735e6a
+  OutlineAppleLib: 6c43be2bac6bc474db40a2cd4997cff6e3b3bb59
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: df81ab637d35fac9e6eb94611cfd20f0feb05455
   RCTTypeSafety: 4636e4a36c7c2df332bda6d59b19b41c443d4287
@@ -763,6 +755,6 @@ SPEC CHECKSUMS:
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 86fed2e4d425ee4c6eab3813ba1791101ee153c6
 
-PODFILE CHECKSUM: 00bd3f860628a5f8543bb460e05502c195890f05
+PODFILE CHECKSUM: bf033d0bad94838b1fb9b86af554b484932830e3
 
 COCOAPODS: 1.13.0

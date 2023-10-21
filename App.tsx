@@ -14,6 +14,9 @@ export default function App() {
   const [tunnel] = useState<Tunnel>(createTunnel);
 
   useEffect(() => {
+    // can be started from elsewhere (i.e. iOS settings)
+    tunnel.isRunning().then(setIsConnected);
+
     tunnel.onStatusChange((status) => {
       console.log("Tunnel status changed", status);
       setIsConnected(status === TunnelStatus.CONNECTED);
