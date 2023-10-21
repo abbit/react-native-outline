@@ -98,6 +98,8 @@ PODS:
   - libevent (2.1.12)
   - OutlineApi (1.0.0):
     - ExpoModulesCore
+    - OutlineAppleLib
+  - OutlineAppleLib (1.0.0)
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -535,6 +537,7 @@ DEPENDENCIES:
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - libevent (~> 2.1.12)
   - OutlineApi (from `../modules/outline-api/ios`)
+  - OutlineAppleLib (from `../modules/outline-api/ios/OutlineAppleLib`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
@@ -622,6 +625,8 @@ EXTERNAL SOURCES:
     :tag: hermes-2023-08-07-RNv0.72.4-813b2def12bc9df02654b3e3653ae4a68d0572e0
   OutlineApi:
     :path: "../modules/outline-api/ios"
+  OutlineAppleLib:
+    :path: "../modules/outline-api/ios/OutlineAppleLib"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -713,7 +718,8 @@ SPEC CHECKSUMS:
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   hermes-engine: f6cf92a471053245614d9d8097736f6337d5b86c
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  OutlineApi: c161f7da35e6796e8be984d20163a88c1f3f9bf7
+  OutlineApi: a9267b2a49a39efddeb397abfd5fa4600a735e6a
+  OutlineAppleLib: 6c43be2bac6bc474db40a2cd4997cff6e3b3bb59
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: df81ab637d35fac9e6eb94611cfd20f0feb05455
   RCTTypeSafety: 4636e4a36c7c2df332bda6d59b19b41c443d4287
@@ -749,6 +755,6 @@ SPEC CHECKSUMS:
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 86fed2e4d425ee4c6eab3813ba1791101ee153c6
 
-PODFILE CHECKSUM: 6a3791acdc8f3f2629bb96d9f3ae92ad7b2c7ae8
+PODFILE CHECKSUM: bf033d0bad94838b1fb9b86af554b484932830e3
 
 COCOAPODS: 1.13.0

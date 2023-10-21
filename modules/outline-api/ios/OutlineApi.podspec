@@ -8,8 +8,9 @@ Pod::Spec.new do |s|
   s.platform       = :ios, '13.0'
   s.source         = { git: '' }
   s.static_framework = true
-
+  
   s.dependency 'ExpoModulesCore'
+  s.dependency 'OutlineAppleLib'
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
@@ -17,6 +18,5 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
   
-  s.source_files = "**/*.{h,m,mm,swift,hpp,cpp}"
-  s.vendored_frameworks = "OutlineApiGo.xcframework" 
+  s.source_files = "OutlineApiModule.swift"
 end

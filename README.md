@@ -47,10 +47,21 @@ $ npm run android
 
 ### iOS
 
-TODO
+```bash
+$ npx expo prebuild -p ios
+```
+
+Open ios project in Xcode:
+
+```bash
+$ xed ios
+```
+
+Set signing team in Xcode and run
+
+Build and run
 
 ## How to use
 
-- Press "Prepare VPN" to grant VPN permissions
 - Enter Outline access key in the text field
 - Press "Connect"

@@ -120,7 +120,7 @@ class MobileTunnel implements Tunnel {
   async stop() {
     let errCode = -1;
     try {
-      const errCode = await OutlineApiModule.stopVpn(this.id);
+      errCode = await OutlineApiModule.stopVpn(this.id);
     } catch (cause) {
       console.log("Failed to stop VPN", cause);
       throw new Error("FailedToStopVpn");
@@ -138,7 +138,10 @@ class MobileTunnel implements Tunnel {
 
   onStatusChange(listener: (status: TunnelStatus) => void) {
     this.statusChangeSubscription = addTunnelStatusListener((event) => {
-      if (event.tunnelId === this.id) {
+      if (
+        event.tunnelId === this.id ||
+        event.status === TunnelStatus.DISCONNECTED
+      ) {
         listener(event.status);
       }
     });
